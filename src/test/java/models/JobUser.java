@@ -11,8 +11,6 @@ public class JobUser {
     String name;
     @Expose
     String job;
-    @Expose
     String id;
-    @Expose
     String createdAt;
 }

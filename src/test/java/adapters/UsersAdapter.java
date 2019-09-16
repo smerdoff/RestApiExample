@@ -1,7 +1,5 @@
 package adapters;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.JobUser;
@@ -10,14 +8,12 @@ import org.apache.http.protocol.HTTP;
 
 import static io.restassured.RestAssured.given;
 
-public class UsersAdapter {
+public class UsersAdapter extends MainAdapter{
 
     public JobUser post(JobUser user) {
-        Gson gson = new GsonBuilder()
-                .excludeFieldsWithoutExposeAnnotation()
-                .create();
-        
-        Response response = given()
+
+        Response response =
+        given()
                 .header(HTTP.CONTENT_TYPE, ContentType.JSON)
                 .body(gson.toJson(user))
         .when()
@@ -27,5 +23,21 @@ public class UsersAdapter {
                 .contentType(ContentType.JSON).extract().response();
 
         return gson.fromJson(response.asString().trim(), JobUser.class);
+    }
+
+    public UsersList get(int page) {
+
+        Response response =
+                given()
+                        .header(HTTP.CONTENT_TYPE, ContentType.JSON)
+                        .log().all()
+                        .when()
+                        .get(String.format("https://reqres.in/api/users?page=%s", page))
+                        .then()
+                        .log().all()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON).extract().response();
+
+        return gson.fromJson(response.asString().trim(), UsersList.class);
     }
 }

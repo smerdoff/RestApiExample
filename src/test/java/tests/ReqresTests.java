@@ -1,25 +1,23 @@
 package tests;
 
-import adapters.UserListAdapter;
 import adapters.UsersAdapter;
 import models.JobUser;
-import models.User;
 import models.UsersList;
 import org.testng.annotations.Test;
 
-import java.util.Arrays;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 import static org.testng.Assert.assertEquals;
 
-public class ReqresTests {
+public class ReqresTests extends BaseTest{
 
     @Test
-    public void testList() {
-        UsersList expectedList = new UsersList();
-        expectedList.setData(Arrays.asList(
-                new User(1, "test", "", "", "")
-        ));
-        UsersList list = new UserListAdapter().get(1);
+    public void testList() throws FileNotFoundException {
+        UsersList expectedList;
+        expectedList = gson.fromJson(new FileReader("src/test/java/resources/expectedList.json"), UsersList.class);
+
+        UsersList list = new UsersAdapter().get(1);
         assertEquals(list, expectedList);
     }
     
