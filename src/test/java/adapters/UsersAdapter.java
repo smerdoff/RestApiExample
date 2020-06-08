@@ -3,6 +3,7 @@ package adapters;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.JobUser;
+import models.SingleUser;
 import models.UsersList;
 import org.apache.http.protocol.HTTP;
 
@@ -40,4 +41,21 @@ public class UsersAdapter extends MainAdapter{
 
         return gson.fromJson(response.asString().trim(), UsersList.class);
     }
+
+    public SingleUser getUser(int id) {
+
+        Response response =
+                given()
+                        .header(HTTP.CONTENT_TYPE, ContentType.JSON)
+                        .log().all()
+                .when()
+                        .get(String.format("https://reqres.in/api/users/%s", id))
+                .then()
+                        .log().all()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON).extract().response();
+
+        return gson.fromJson(response.asString().trim(), SingleUser.class);
+    }
+
 }
