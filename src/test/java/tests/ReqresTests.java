@@ -18,7 +18,7 @@ public class ReqresTests extends BaseTest{
     @Test
     public void testList() throws FileNotFoundException {
         UsersList expectedList;
-        expectedList = gson.fromJson(new FileReader("src/test/java/resources/expectedList.json"), UsersList.class);
+        expectedList = gson.fromJson(new FileReader("src/test/resources/expectedList.json"), UsersList.class);
 
         UsersList list = new UsersAdapter().get(1);
         assertEquals(list, expectedList);
