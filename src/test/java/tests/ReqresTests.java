@@ -1,11 +1,10 @@
 package tests;
 
+import adapters.ResourcesAdapter;
 import adapters.UsersAdapter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
-import models.JobUser;
-import models.SingleUser;
-import models.UsersList;
+import models.*;
 import org.testng.annotations.Test;
 
 import java.io.FileNotFoundException;
@@ -73,6 +72,36 @@ public class ReqresTests extends BaseTest{
         expectedUser = gson.fromJson(new FileReader("src/test/resources/expectedUser.json"), SingleUser.class);
         SingleUser singleUser = new UsersAdapter().getUser(2);
         assertEquals(singleUser,expectedUser);
+    }
+
+    @Test
+    public void notFoundUser() {
+    String expected = "{}";
+    //https://reqres.in/api/users/23
+    Response response = when()
+            .get("https://reqres.in/api/users/23")
+            .then()
+            .log().all()
+            .statusCode(404)
+            .contentType(ContentType.JSON).extract().response();
+    assertEquals(expected, response.asString().trim());
+    }
+
+    @Test
+    public void getResourceList() throws FileNotFoundException {
+        ResourcesList expectedList;
+        expectedList = gson.fromJson(new FileReader("src/test/resources/expectedResources.json"), ResourcesList.class);
+        ResourcesList list = new ResourcesAdapter().get();
+        assertEquals(list, expectedList);
+    }
+
+    @Test
+    public void getSingleResource() throws FileNotFoundException {
+        SingleResource expectedResource;
+        expectedResource = gson.fromJson(new FileReader("src/test/resources/expectedSingleResource.json"), SingleResource.class);
+        SingleResource singleResource = new ResourcesAdapter().getResource(2);
+        assertEquals(expectedResource,singleResource);
+
     }
 
 }
