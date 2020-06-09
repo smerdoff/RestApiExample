@@ -4,8 +4,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.ResourcesList;
 import models.SingleResource;
-import models.SingleUser;
-import models.UsersList;
 import org.apache.http.protocol.HTTP;
 
 import static io.restassured.RestAssured.given;
@@ -17,9 +15,9 @@ public class ResourcesAdapter extends MainAdapter {
                 given()
                         .header(HTTP.CONTENT_TYPE, ContentType.JSON)
                         .log().all()
-                        .when()
+                .when()
                         .get("https://reqres.in/api/unknown")
-                        .then()
+                .then()
                         .log().all()
                         .statusCode(200)
                         .contentType(ContentType.JSON).extract().response();
@@ -33,9 +31,9 @@ public class ResourcesAdapter extends MainAdapter {
                 given()
                         .header(HTTP.CONTENT_TYPE, ContentType.JSON)
                         .log().all()
-                        .when()
+                .when()
                         .get(String.format("https://reqres.in/api/unknown/%s", id))
-                        .then()
+                .then()
                         .log().all()
                         .statusCode(200)
                         .contentType(ContentType.JSON).extract().response();

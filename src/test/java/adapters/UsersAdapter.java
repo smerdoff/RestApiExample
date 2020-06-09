@@ -48,9 +48,9 @@ public class UsersAdapter extends MainAdapter{
                 given()
                         .header(HTTP.CONTENT_TYPE, ContentType.JSON)
                         .log().all()
-                        .when()
+                .when()
                         .get(String.format("https://reqres.in/api/users?delay=%s", delay))
-                        .then()
+                .then()
                         .log().all()
                         .statusCode(200)
                         .contentType(ContentType.JSON).extract().response();
