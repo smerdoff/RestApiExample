@@ -169,7 +169,6 @@ public class ReqresTests extends BaseTest{
                 .statusCode(200)
                 .contentType(ContentType.JSON).extract().response();
         Assert.assertEquals(expectedResponse, response.asString().trim());
-
     }
 
     @Test
@@ -186,6 +185,30 @@ public class ReqresTests extends BaseTest{
                         .body("error", equalTo("Missing password"));
     }
 
+    @Test
+    public void SuccessfulLogin() {
+        String expectedResponse = "{\"token\":\"QpwL5tke4Pnpja7X4\"}";
+        Response response =
+                given()
+                        .body("{\"email\":\"eve.holt@reqres.in\",\"password\":\"cityslicka\"}")
+                        .header(HTTP.CONTENT_TYPE, ContentType.JSON)
+                        .log().all()
+                .when()
+                        .post("https://reqres.in/api/login")
+                .then()
+                        .log().all()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON).extract().response();
+        Assert.assertEquals(expectedResponse, response.asString().trim());
+    }
+
+    @Test
+    public void getDelayedResponse() throws FileNotFoundException {
+        UsersList expectedList;
+        expectedList = gson.fromJson(new FileReader("src/test/resources/expectedDelayResponse.json"), UsersList.class);
+        UsersList list = new UsersAdapter().getDelayedResponse(3);
+        assertEquals(list, expectedList);
+    }
 
 
 }

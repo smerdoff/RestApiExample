@@ -42,6 +42,22 @@ public class UsersAdapter extends MainAdapter{
         return gson.fromJson(response.asString().trim(), UsersList.class);
     }
 
+    public UsersList getDelayedResponse(int delay) {
+
+        Response response =
+                given()
+                        .header(HTTP.CONTENT_TYPE, ContentType.JSON)
+                        .log().all()
+                        .when()
+                        .get(String.format("https://reqres.in/api/users?delay=%s", delay))
+                        .then()
+                        .log().all()
+                        .statusCode(200)
+                        .contentType(ContentType.JSON).extract().response();
+
+        return gson.fromJson(response.asString().trim(), UsersList.class);
+    }
+
     public SingleUser getUser(int id) {
 
         Response response =
