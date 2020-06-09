@@ -58,4 +58,5 @@ public class UsersAdapter extends MainAdapter{
         return gson.fromJson(response.asString().trim(), SingleUser.class);
     }
 
+
 }

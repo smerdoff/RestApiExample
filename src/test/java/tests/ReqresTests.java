@@ -5,10 +5,13 @@ import adapters.UsersAdapter;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.*;
+import org.apache.http.protocol.HTTP;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.nio.charset.Charset;
 
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.when;
@@ -24,12 +27,6 @@ public class ReqresTests extends BaseTest{
 
         UsersList list = new UsersAdapter().get(1);
         assertEquals(list, expectedList);
-    }
-    
-    @Test
-    public void createUser() {
-        JobUser user = new UsersAdapter().post(new JobUser("name", "job", "", ""));
-        System.out.println(user);
     }
 
     @Test
@@ -50,12 +47,11 @@ public class ReqresTests extends BaseTest{
     public void getListAPI() {
     given()
             .body("page: 2")
-            .when()
+    .when()
             .get("https://reqres.in/api/users?page=2")
-            .then()
+    .then()
             .log().all()
-            .statusCode(200)
-            .body("ad.text",equalTo("A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things."));
+            .statusCode(200);
 }
 
     @Test
@@ -77,7 +73,6 @@ public class ReqresTests extends BaseTest{
     @Test
     public void notFoundUser() {
     String expected = "{}";
-    //https://reqres.in/api/users/23
     Response response = when()
             .get("https://reqres.in/api/users/23")
             .then()
@@ -101,8 +96,97 @@ public class ReqresTests extends BaseTest{
         expectedResource = gson.fromJson(new FileReader("src/test/resources/expectedSingleResource.json"), SingleResource.class);
         SingleResource singleResource = new ResourcesAdapter().getResource(2);
         assertEquals(expectedResource,singleResource);
+    }
+
+    @Test
+    public void notFoundResource() {
+        String expected = "{}";
+        Response response =
+        when()
+                .get("https://reqres.in/api/resources/23")
+        .then()
+                .log().all()
+                .statusCode(404)
+                .contentType(ContentType.JSON).extract().response();
+        assertEquals(expected, response.asString().trim());
+    }
+
+    @Test
+    public void createUser() {
+        given()
+                .body("{\"name\":\"morpheus\",\"job\":\"leader\"}")
+        .when()
+                .post("https://reqres.in/api/users")
+        .then()
+                .log().all()
+                .statusCode(201);
+    }
+
+    @Test
+    public void putUser() {
+        given()
+                .body("{\"name\":\"morpheus\",\"job\":\"zion resident\"}")
+        .when()
+                .put("https://reqres.in/api/users/2")
+        .then()
+                .log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    public void patchUser() {
+        given()
+                .body("{\"name\":\"morpheus\",\"job\":\"zion resident\"}")
+        .when()
+                .patch("https://reqres.in/api/users/2")
+        .then()
+                .log().all()
+                .statusCode(200);
+    }
+
+    @Test
+    public void deleteUser() {
+        when()
+                .delete("https://reqres.in/api/users/2")
+        .then()
+                .log().all()
+                .statusCode(204);
+    }
+
+    @Test
+    public void SuccessfulRegister() {
+
+        String expectedResponse = "{\"id\":4,\"token\":\"QpwL5tke4Pnpja7X4\"}";
+        Response response =
+        given()
+                .body("{\"email\":\"eve.holt@reqres.in\",\"password\":\"pistol\"}")
+                .header(HTTP.CONTENT_TYPE, ContentType.JSON)
+                .log().all()
+        .when()
+                .post("https://reqres.in/api/register")
+        .then()
+                .log().all()
+                .statusCode(200)
+                .contentType(ContentType.JSON).extract().response();
+        Assert.assertEquals(expectedResponse, response.asString().trim());
 
     }
+
+    @Test
+    public void UnsuccessfulRegister() {
+                given()
+                        .body("{\"email\":\"sydney@fife\"}")
+                        .header(HTTP.CONTENT_TYPE, ContentType.JSON)
+                        .log().all()
+                .when()
+                        .post("https://reqres.in/api/register")
+                .then()
+                        .log().all()
+                        .statusCode(400)
+                        .body("error", equalTo("Missing password"));
+    }
+
+
 
 }
 
